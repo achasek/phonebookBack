@@ -3,6 +3,8 @@ const app = express();
 const morgan = require('morgan'); 
 const cors = require('cors');
 app.use(cors());
+// built in middelware to allow express to render static html pages and JS
+app.use(express.static('build'))
 
 const requestLogger = (req, res, next) => {
     console.log('Method:', req.method)
