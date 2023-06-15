@@ -1,10 +1,15 @@
 const express = require('express');
 const app = express();
+// this is needed for outside modules to be able to read contents of ENV
+require('dotenv').config();
 const morgan = require('morgan'); 
 const cors = require('cors');
 app.use(cors());
 // built in middelware to allow express to render static html pages and JS
-app.use(express.static('build'))
+// aka this allows us to view production build in browser like during part3 deployment
+app.use(express.static('build'));
+const Person = require('./models/person');
+
 
 const requestLogger = (req, res, next) => {
     console.log('Method:', req.method)
@@ -67,8 +72,18 @@ app.get('/info', (req, res) => {
     <h1>${new Date()}</h1>`)
 })
 
+// code prior to mongo/mongoose just responed with json via hardcoded
+// persons object above
+// app.get('/api/persons', (req, res) => {
+//     res.json(persons)
+// })
+
+// code using mongo and mongoose now requires you to query for the data,
+// then respond with that in json
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Person.find({}).then(persons => {
+        res.json(persons)
+    })
 })
 
 app.get('/api/persons/:id', (req, res) => {
