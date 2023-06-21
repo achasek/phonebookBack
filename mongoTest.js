@@ -44,9 +44,9 @@ const Person = mongoose.model('Person', personSchema)
 const length = process.argv.length
 if(length > 3) {
     const person = new Person({
-        id: process.argv[3],
-        name: process.argv[4],
-        number: process.argv[5]
+        // id: process.argv[3],
+        name: process.argv[3],
+        number: process.argv[4]
     })
 
     person.save().then(result => {
