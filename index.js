@@ -52,6 +52,7 @@ app.use(requestLogger)
 // we then call upon the custom morgan token 'body' at the end of this string
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
+// hard coded data before database integration
 // let persons = [
 //     { 
 //       "id": 1,
@@ -167,7 +168,7 @@ app.post('/api/persons', (req, res) => {
     // console.log(names, 'names')
 
     if(!body.name || !body.number) {
-        return res.status(404).send('<h1>Entry must contain a name and number</h1>')
+        return res.status(404).send({ error: 'Entry must contain a name and number'})
     }
 
     // if(names.includes(body.name)) {
