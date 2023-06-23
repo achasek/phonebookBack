@@ -3,7 +3,7 @@ const app = express();
 
 // this is needed for outside modules to be able to read contents of ENV
 require('dotenv').config();
-const morgan = require('morgan'); 
+const morgan = require('morgan');
 const cors = require('cors');
 app.use(cors());
 
@@ -14,30 +14,30 @@ const Person = require('./models/person');
 
 
 const requestLogger = (req, res, next) => {
-    console.log('Method:', req.method)
-    console.log('Path:  ', req.path)
-    console.log('Body:  ', req.body)
-    console.log('---')
-    next()
+  console.log('Method:', req.method)
+  console.log('Path:  ', req.path)
+  console.log('Body:  ', req.body)
+  console.log('---')
+  next()
 }
 
 const unknownEndpoint = (req, res) => {
-    res.status(404).send({ error: 'unknown endpoint' })
+  res.status(404).send({ error: 'unknown endpoint' })
 }
 
 const errorHandler = (error, request, response, next) => {
-    console.error(error.message)
-  
-    // if error is CastError, that means error was related to mongoDB id
-    if (error.name === 'CastError') {
-        return response.status(400).send({ error: 'malformatted id' })
-    // else-if block added to handled errors related to data not passing 
+  console.error(error.message)
+
+  // if error is CastError, that means error was related to mongoDB id
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'malformatted id' })
+    // else-if block added to handled errors related to data not passing
     // a Mongoose validator
-    } else if (error.name === 'ValidationError') {
-        return response.status(400).json({ error: error.message })
-    }
-  
-    next(error)
+  } else if (error.name === 'ValidationError') {
+    return response.status(400).json({ error: error.message })
+  }
+
+  next(error)
 }
 
 // express json body parser should always be one of the first middlewares mounted
@@ -45,10 +45,10 @@ app.use(express.json())
 
 // name of custom morgan token is 1st parameter 'body'
 morgan.token('body', function getBody (req) {
-    // we have to stringify here or else this morgan custom body token
-    // that we create here will log as undefined
-    return JSON.stringify(req.body)
-})  
+  // we have to stringify here or else this morgan custom body token
+  // that we create here will log as undefined
+  return JSON.stringify(req.body)
+})
 
 // since request logger requires the req.body to be populated, we must use json parser first to populate req.body
 app.use(requestLogger)
@@ -58,37 +58,38 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 // hard coded data before database integration
 // let persons = [
-//     { 
+//     {
 //       "id": 1,
-//       "name": "Arto Hellas", 
+//       "name": "Arto Hellas",
 //       "number": "040-123456"
 //     },
-//     { 
+//     {
 //       "id": 2,
-//       "name": "Ada Lovelace", 
+//       "name": "Ada Lovelace",
 //       "number": "39-44-5323523"
 //     },
-//     { 
+//     {
 //       "id": 3,
-//       "name": "Dan Abramov", 
+//       "name": "Dan Abramov",
 //       "number": "12-43-234345"
 //     },
-//     { 
+//     {
 //       "id": 4,
-//       "name": "Mary Poppendieck", 
+//       "name": "Mary Poppendieck",
 //       "number": "39-23-6423122"
 //     }
 // ]
 
 app.get('/', (req, res) => {
-    res.send('<h1>Hello Server</h1>')
+  res.send('<h1>Hello Server</h1>')
 })
 
-// to display the time that the req to the /info path is made 
-// by the user client-side, you need to invoke the Date function in line and not 
+// to display the time that the req to the /info path is made
+// by the user client-side, you need to invoke the Date function in line and not
 // in a separate variable like I first attempted
 app.get('/info', (req, res) => {
-    res.send(`<h1>Phonebook has info for ${persons.length} people</h1>
+  // eslint-disable-next-line no-undef
+  res.send(`<h1>Phonebook has info for ${persons.length} people</h1>
     <br/>
     <h1>${new Date()}</h1>`)
 })
@@ -102,10 +103,10 @@ app.get('/info', (req, res) => {
 // code using mongo and mongoose now requires you to query for the data,
 // then respond with that in json
 app.get('/api/persons', (req, res) => {
-    Person.find({}).then(persons => {
-        console.log('get all route hit')
-        res.json(persons)
-    })
+  Person.find({}).then(persons => {
+    console.log('get all route hit')
+    res.json(persons)
+  })
 })
 
 // show function prior to mongo
@@ -123,19 +124,19 @@ app.get('/api/persons', (req, res) => {
 
 // show function after mongodb
 app.get('/api/persons/:id', (req, res, next) => {
-    Person.findById(req.params.id)
+  Person.findById(req.params.id)
     .then(person => {
-        if(person) {
-            res.json(person)
+      if(person) {
+        res.json(person)
         // this else is for when id cannot be found
-        } else {
-            res.status(404).send({ error: `person with id of ${req.params.id} could not be found`})
-        }
+      } else {
+        res.status(404).send({ error: `person with id of ${req.params.id} could not be found` })
+      }
     })
     // this catch is for when the promise rejects; different from the else block prior
     // next(error) points to errorHandler() custom middleware above
     .catch(error => {
-        next(error)
+      next(error)
     })
 })
 
@@ -162,59 +163,59 @@ app.get('/api/persons/:id', (req, res, next) => {
 // const everyone = Person.find({})
 // person creation code with mongodb and their unique _id
 app.post('/api/persons', (req, res, next) => {
-    const body = req.body
-    // const names = Person.find({})
-    //     .then(persons => {
-    //         persons.map(person => person.name)
-    //     })
-    // const names = everyone.map(person => person.names.name)
-    
-    // console.log(names, 'names')
+  const body = req.body
+  // const names = Person.find({})
+  //     .then(persons => {
+  //         persons.map(person => person.name)
+  //     })
+  // const names = everyone.map(person => person.names.name)
 
-    // this if-block is only needed when we aren't using Mongoose validators
-    // if(!body.name || !body.number) {
-    //     return res.status(404).send({ error: 'Entry must contain a name and number'})
-    // }
+  // console.log(names, 'names')
 
-    // if(names.includes(body.name)) {
-    //     res.status(404).send(`${body.name} already exists`)
-    // }
+  // this if-block is only needed when we aren't using Mongoose validators
+  // if(!body.name || !body.number) {
+  //     return res.status(404).send({ error: 'Entry must contain a name and number'})
+  // }
 
-    const person = new Person({
-        // id: body._id.toString(),
-        name: body.name,
-        number: body.number
-    })
+  // if(names.includes(body.name)) {
+  //     res.status(404).send(`${body.name} already exists`)
+  // }
 
-    person.save()
+  const person = new Person({
+    // id: body._id.toString(),
+    name: body.name,
+    number: body.number
+  })
+
+  person.save()
     .then(newPerson => {
-        res.json(newPerson)
-        console.log(newPerson)
+      res.json(newPerson)
+      console.log(newPerson)
     })
     .catch(error => {
-        next(error)
+      next(error)
     })
 })
 
-// separate put request with mongoDB 
+// separate put request with mongoDB
 app.put('/api/persons/:id', (req, res, next) => {
-    // destructed name and number act as required configuration object for runValidators to work
-    const { name, number } = req.body
+  // destructed name and number act as required configuration object for runValidators to work
+  const { name, number } = req.body
 
-    // code prior to Mongoose validator functions
-    // const body = req.body
+  // code prior to Mongoose validator functions
+  // const body = req.body
 
-    // const person = {
-    //     name: body.name,
-    //     number: body.number
-    // }
+  // const person = {
+  //     name: body.name,
+  //     number: body.number
+  // }
 
-    Person.findByIdAndUpdate(req.params.id, {name, number}, {new: true, runValidators: true, context: 'query'})
+  Person.findByIdAndUpdate(req.params.id, { name, number }, { new: true, runValidators: true, context: 'query' })
     .then(updatedPerson => {
-        res.json(updatedPerson)
+      res.json(updatedPerson)
     })
     .catch(error => {
-        next(error)
+      next(error)
     })
 })
 
@@ -228,12 +229,13 @@ app.put('/api/persons/:id', (req, res, next) => {
 
 // code with mongoDB
 app.delete('/api/persons/:id', (req, res, next) => {
-    Person.findByIdAndRemove(req.params.id)
+  Person.findByIdAndRemove(req.params.id)
+    // eslint-disable-next-line no-unused-vars
     .then(result => {
-        res.status(204).end()
+      res.status(204).end()
     })
     .catch(error => {
-        next(error)
+      next(error)
     })
 })
 
@@ -251,5 +253,5 @@ app.use(errorHandler)
 // exists in env, to then use port 3001
 const PORT = process.env.PORT || 3001
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`)
+  console.log(`Server running on port ${PORT}`)
 })
