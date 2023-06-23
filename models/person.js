@@ -13,13 +13,27 @@ mongoose.connect(URL)
     })
 
 const personSchema = new mongoose.Schema({
-    name: String,
-    number: Number,
+    name: {
+        type: String,
+        minLength: 2,
+        required: true
+    },
+    number: {
+       type: String,
+       minLength: 3,
+       required: true
+    }
 })
     
+// here i am starting the number key as type string and parsing it
+// to a number so it can be validated for a length propety by Mongoose
+// once it passes the validator function, which length is a propety of strings only
+// it then will be parsed to a number, keeping the data-types correct AND
+// passing validator functions
 personSchema.set('toJSON', {
     transform: (document, returnedObject) => {
         returnedObject.id = returnedObject._id.toString()
+        returnedObject.number = Number(returnedObject.number)
     }
 })
 

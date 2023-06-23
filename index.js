@@ -30,8 +30,12 @@ const errorHandler = (error, request, response, next) => {
   
     // if error is CastError, that means error was related to mongoDB id
     if (error.name === 'CastError') {
-      return response.status(400).send({ error: 'malformatted id' })
-    } 
+        return response.status(400).send({ error: 'malformatted id' })
+    // else-if block added to handled errors related to data not passing 
+    // a Mongoose validator
+    } else if (error.name === 'ValidationError') {
+        return response.status(400).json({ error: error.message })
+    }
   
     next(error)
 }
@@ -157,7 +161,7 @@ app.get('/api/persons/:id', (req, res, next) => {
 
 // const everyone = Person.find({})
 // person creation code with mongodb and their unique _id
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
     // const names = Person.find({})
     //     .then(persons => {
@@ -167,9 +171,10 @@ app.post('/api/persons', (req, res) => {
     
     // console.log(names, 'names')
 
-    if(!body.name || !body.number) {
-        return res.status(404).send({ error: 'Entry must contain a name and number'})
-    }
+    // this if-block is only needed when we aren't using Mongoose validators
+    // if(!body.name || !body.number) {
+    //     return res.status(404).send({ error: 'Entry must contain a name and number'})
+    // }
 
     // if(names.includes(body.name)) {
     //     res.status(404).send(`${body.name} already exists`)
@@ -181,22 +186,30 @@ app.post('/api/persons', (req, res) => {
         number: body.number
     })
 
-    person.save().then(newPerson => {
+    person.save()
+    .then(newPerson => {
         res.json(newPerson)
         console.log(newPerson)
+    })
+    .catch(error => {
+        next(error)
     })
 })
 
 // separate put request with mongoDB 
 app.put('/api/persons/:id', (req, res, next) => {
-    const body = req.body
+    // destructed name and number act as required configuration object for runValidators to work
+    const { name, number } = req.body
 
-    const person = {
-        name: body.name,
-        number: body.number
-    }
+    // code prior to Mongoose validator functions
+    // const body = req.body
 
-    Person.findByIdAndUpdate(req.params.id, person, {new: true})
+    // const person = {
+    //     name: body.name,
+    //     number: body.number
+    // }
+
+    Person.findByIdAndUpdate(req.params.id, {name, number}, {new: true, runValidators: true, context: 'query'})
     .then(updatedPerson => {
         res.json(updatedPerson)
     })
