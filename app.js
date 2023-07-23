@@ -1,5 +1,6 @@
 // app.js is where the application is actually created
 // where we create all of our routers and start the middleware pipeline
+// and where API delcarations occur
 
 const express = require('express')
 const app = express()
@@ -9,15 +10,6 @@ const cors = require('cors')
 // UNFINISHED this shouldnt be required since its used in config.js
 // but app crashes without it here as well
 require('dotenv').config()
-
-const morgan = require('morgan')
-
-// name of custom morgan token is 1st parameter 'body'
-morgan.token('body', function getBody (req) {
-  // we have to stringify here or else this morgan custom body token
-  // that we create here will log as undefined
-  return JSON.stringify(req.body)
-})
 
 const personsRouter = require('./controllers/persons')
 // if we wanted to add another router meant for dealing with other features
@@ -36,6 +28,7 @@ mongoose.set('strictQuery', false)
 
 logger.info('connecting to', config.DATABASE_URL)
 
+// connects mongoose to mongoDB
 mongoose.connect(config.DATABASE_URL)
   .then(() => {
     logger.info('connected to MongoDB')
@@ -54,7 +47,7 @@ app.use(express.json())
 // since requestLogger requires the req.body to be populated, we must use json parser first to populate req.body
 app.use(middleware.requestLogger)
 // we then call upon the custom morgan token 'body' at the end of this string
-app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'))
+app.use(middleware.morgan(':method :url :status :res[content-length] - :response-time ms :body'))
 
 // before our big file restructure, we only used one main Express router
 // now, we are using separte routers for each of our applications functions

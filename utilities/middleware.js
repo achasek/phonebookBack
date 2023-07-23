@@ -1,4 +1,12 @@
 const logger = require('./logger')
+const morgan = require('morgan')
+
+// name of custom morgan token is 1st parameter 'body'
+morgan.token('body', function getBody (req) {
+  // we have to stringify here or else this morgan custom body token
+  // that we create here will log as undefined
+  return JSON.stringify(req.body)
+})
 
 const requestLogger = (req, res, next) => {
   logger.info('Method:', req.method)
@@ -28,6 +36,7 @@ const errorHandler = (error, request, response, next) => {
 }
 
 module.exports = {
+  morgan,
   requestLogger,
   unknownEndpoint,
   errorHandler

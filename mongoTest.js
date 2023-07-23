@@ -39,26 +39,27 @@ const Person = mongoose.model('Person', personSchema)
 //   mongoose.connection.close()
 // })
 
-// dynamic testing allows for the addition of new entires via the CLI like 
+// dynamic testing allows for the addition of new entires via the CLI like
 // node mongoTest.js <password> 6 'kyra w' 456
 const length = process.argv.length
 if(length > 3) {
-    const person = new Person({
-        // id: process.argv[3],
-        name: process.argv[3],
-        number: process.argv[4]
-    })
+  const person = new Person({
+    // id: process.argv[3],
+    name: process.argv[3],
+    number: process.argv[4]
+  })
 
-    person.save().then(result => {
-        console.log(`${person.name} added`)
-        mongoose.connection.close()
-    })
+  // eslint-disable-next-line no-unused-vars
+  person.save().then(result => {
+    console.log(`${person.name} added`)
+    mongoose.connection.close()
+  })
 } else {
-    // result is an array of all documents here
-    Person.find({}).then(result => {
-        result.forEach(note => {
-        console.log(note)
-        })
-        mongoose.connection.close()
+  // result is an array of all documents here
+  Person.find({}).then(result => {
+    result.forEach(person => {
+      console.log(person)
     })
+    mongoose.connection.close()
+  })
 }

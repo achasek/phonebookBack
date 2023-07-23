@@ -1,11 +1,14 @@
+// controller is meant for handling communication between the model and the view (the front end)
+
 const personsRouter = require('express').Router()
 const Person = require('../models/person')
 
 // if we wanted to add another router meant for dealing with other features
 // outside of our current phonebook features, we would declare it like this
-// but in a separate file
+// but in a separate file 'controllers/newRouter.js'
 // const newRouter = require('express').Router()
 // const NewModel = require('../models/NewModel')
+// a model is only required if it is data we are working with. You theoretically wouldnt need a model if you had a separate router just to display static information, such as our info router
 
 
 // notice that URI is shorter now. The base URL for THIS PARTICULAR ROUTER is

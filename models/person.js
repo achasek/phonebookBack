@@ -1,17 +1,4 @@
 const mongoose = require('mongoose');
-mongoose.set('strictQuery',false)
-
-const URL = process.env.DATABASE_URL
-console.log('connecting to', URL)
-
-mongoose.connect(URL)
-  // eslint-disable-next-line no-unused-vars
-  .then(result => {
-    console.log('Connected to MongoDB Successfully')
-  })
-  .catch(error => {
-    console.log(`Connection to MongoDB failed: ${error}`)
-  })
 
 const phoneNumberValidator = (numStr) => {
   return /\d{3}-\d{3}-\d{4}/.test(numStr);
